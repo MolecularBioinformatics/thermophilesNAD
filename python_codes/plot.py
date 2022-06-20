@@ -141,14 +141,18 @@ def subplot_fluxes(F, save=False, filename='', **kwargs):
 
     fig, ax = plt.subplots(1, 3, figsize=(15, 5))
     for i, ax in enumerate(ax.flat):
-        sns.lineplot(data=F, x=F.temperature, y=y[i], hue='pathway', hue_order=['PncA', 'Nampt'],
-                     palette=['#FF0000', '#1E90FF'], ax=ax, err_style='bars', dashes=True)
+        lp = sns.lineplot(data=F[F.pathway == 'PncA'], x=F[F.pathway == 'PncA'].temperature, y=y[i],
+                          ax=ax, err_style='bars', label='PncA', color='#FF0000')
+        lp.lines[0].set_linestyle('dashed')
+
+        lp = sns.lineplot(data=F[F.pathway == 'Nampt'], x=F[F.pathway == 'Nampt'].temperature, y=y[i],
+                          ax=ax, err_style='bars', alpha=0.7, label='Nampt', color='#1E90FF', dashes=[(2, 2), (2, 2)])
         ax.set_ylabel(y_label[i], fontsize=20)
         ax.set_xlabel('Temperature ($\degree$C)', fontsize=20)
         ax.ticklabel_format(style='scientific', axis='y',
                             scilimits=(-3, 6), useMathText=True)
         ax.set_ylim(y_lim[i])
-        ax.legend(loc='upper left')
+        ax.legend(loc='upper left', title='pathway')
     plt.tight_layout()
     if save == True:
         fig.savefig(filename, dpi=300)
